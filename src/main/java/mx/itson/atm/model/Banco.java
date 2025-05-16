@@ -38,19 +38,7 @@ public class Banco {
         }
     }
     
-    /**
-     * Emite una nueva tarjeta asociada a una cuenta
-     */
-    public Tarjeta emitirTarjeta(String numeroTarjeta, String nip, Cuenta cuenta) {
-        Tarjeta nuevaTarjeta = new Tarjeta(
-            numeroTarjeta,
-            UtilidadSeguridad.hashearNip(nip),
-            LocalDate.now().plusYears(3) // 3 años de vigencia
-        );
-        nuevaTarjeta.setCuentaAsociada(cuenta);
-        tarjetas.add(nuevaTarjeta);
-        return nuevaTarjeta;
-    }
+
     
     /**
      * Busca una tarjeta por su número

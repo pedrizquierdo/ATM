@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import mx.itson.atm.model.Tarjeta;
 import mx.itson.atm.repositories.RepositorioTarjetas;
+import mx.itson.atm.utilities.UtilidadSeguridad;
 
 /**
  *
@@ -32,6 +33,11 @@ public class ServicioAutentificacion {
         if (tarjeta.estaBloqueada()) {
             return false;
         }
+          // 👇 DEBUG: Imprimir lo que se compara
+    System.out.println("NIP ingresado: " + nip);
+    System.out.println("NIP (hash en BD): " + tarjeta.getNip());
+    System.out.println("¿Coinciden?: " + UtilidadSeguridad.verificarNip(nip, tarjeta.getNip()));
+
 
         if (tarjeta.validarNip(nip)) {
             intentosFallidos.remove(tarjeta.getNumeroTarjeta());

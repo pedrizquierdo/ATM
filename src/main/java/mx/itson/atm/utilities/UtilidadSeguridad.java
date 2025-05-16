@@ -17,6 +17,6 @@ public class UtilidadSeguridad {
     }
     
     public static boolean verificarNip(String nipIngresado, String nipHasheado) {
-        return BCrypt.checkpw(nipIngresado, nipHasheado);
-    }
+    return BCrypt.checkpw(nipIngresado, nipHasheado);
+}
 }

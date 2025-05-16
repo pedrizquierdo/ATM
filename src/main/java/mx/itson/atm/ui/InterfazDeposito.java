@@ -29,12 +29,17 @@ public class InterfazDeposito extends JFrame {
         JButton botonDepositar = new JButton("Depositar");
 
         botonDepositar.addActionListener(e -> {
-            double monto = Double.parseDouble(campoMonto.getText());
-            Transaccion txn = controlador.depositar(cuenta.getNumeroCuenta(), monto);
-            if (txn != null) {
-                JOptionPane.showMessageDialog(this, "Depósito exitoso:\n" + txn.generarComprobante());
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo realizar el depósito.");
+            try {
+                double monto = Double.parseDouble(campoMonto.getText());
+                Transaccion txn = controlador.depositar(cuenta.getNumeroCuenta(), monto);
+                if (txn != null) {
+                    JOptionPane.showMessageDialog(this, "Depósito exitoso:\n" + txn.generarComprobante());
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo realizar el depósito.");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al realizar el depósito:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         });
 
@@ -47,4 +52,5 @@ public class InterfazDeposito extends JFrame {
         setVisible(true);
     }
 }
+
 

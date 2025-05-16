@@ -31,7 +31,8 @@ public class RepositorioTarjetas {
                     String nipPlano = rs.getString("nip"); // Este se hashea al crear el objeto
                     LocalDate fechaExpiracion = rs.getDate("fecha_expiracion").toLocalDate();
 
-                    return new Tarjeta(numero, nipPlano, fechaExpiracion);
+                    return new Tarjeta(numero, nipPlano, fechaExpiracion, true);
+
                 } else {
                     return null; // No se encontró la tarjeta
                 }

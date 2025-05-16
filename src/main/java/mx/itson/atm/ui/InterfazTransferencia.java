@@ -29,10 +29,15 @@ public class InterfazTransferencia extends JFrame {
         JButton botonTransferir = new JButton("Transferir");
 
         botonTransferir.addActionListener(e -> {
-            String destino = campoDestino.getText().trim();
-            double monto = Double.parseDouble(campoMonto.getText());
-            boolean ok = controlador.transferir(cuenta.getNumeroCuenta(), destino, monto);
-            JOptionPane.showMessageDialog(this, ok ? "Transferencia exitosa" : "Error en la transferencia");
+            try {
+                String destino = campoDestino.getText().trim();
+                double monto = Double.parseDouble(campoMonto.getText());
+                boolean ok = controlador.transferir(cuenta.getNumeroCuenta(), destino, monto);
+                JOptionPane.showMessageDialog(this, ok ? "Transferencia exitosa" : "Error en la transferencia");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al realizar la transferencia:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         });
 
         JPanel panel = new JPanel(new GridLayout(3, 2));
@@ -46,3 +51,4 @@ public class InterfazTransferencia extends JFrame {
         setVisible(true);
     }
 }
+

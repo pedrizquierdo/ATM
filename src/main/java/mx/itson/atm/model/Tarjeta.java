@@ -22,14 +22,14 @@ public class Tarjeta {
     private LocalDate fechaExpiracion;
     private int intentosFallidos;
 
-    // Constructor completo
-    public Tarjeta(String numeroTarjeta, String nip, LocalDate fechaExpiracion) {
-        this.numeroTarjeta = numeroTarjeta;
-        this.nip = UtilidadSeguridad.hashearNip(nip); // Hasheamos el NIP
-        this.fechaExpiracion = fechaExpiracion;
-        this.bloqueada = false;
-        this.intentosFallidos = 0;
-    }
+  // Constructor para cargar tarjeta con NIP ya hasheado desde la BD
+public Tarjeta(String numeroTarjeta, String nip, LocalDate fechaExpiracion, boolean yaHasheado) {
+    this.numeroTarjeta = numeroTarjeta;
+    this.nip = yaHasheado ? nip : UtilidadSeguridad.hashearNip(nip);
+    this.fechaExpiracion = fechaExpiracion;
+    this.bloqueada = false;
+    this.intentosFallidos = 0;
+}
 
     /**
      * Verifica si la tarjeta está bloqueada
@@ -54,21 +54,19 @@ public class Tarjeta {
      * @return true si el NIP es correcto y la tarjeta no está bloqueada
      */
     public boolean validarNip(String nipIngresado) {
-        if (estaBloqueada()) {
-            return false;
-        }
+    if (estaBloqueada()) return false;
 
-        if (UtilidadSeguridad.verificarNip(nipIngresado, nip)) {
-            intentosFallidos = 0; // Resetear intentos fallidos
-            return true;
-        } else {
-            intentosFallidos++;
-            if (intentosFallidos >= ConfiguracionATM.MAX_INTENTOS_NIP) {
-                bloquear();
-            }
-            return false;
+    if (UtilidadSeguridad.verificarNip(nipIngresado, nip)) {
+        intentosFallidos = 0;
+        return true;
+    } else {
+        intentosFallidos++;
+        if (intentosFallidos >= ConfiguracionATM.MAX_INTENTOS_NIP) {
+            bloquear();
         }
+        return false;
     }
+}
 
     // Getters y setters
     public Cuenta getCuentaAsociada() {

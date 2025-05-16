@@ -28,9 +28,14 @@ public class InterfazCambioNIP extends JFrame {
         JButton botonCambiar = new JButton("Cambiar NIP");
 
         botonCambiar.addActionListener(e -> {
-            String nuevoNip = new String(campoNuevoNip.getPassword());
-            boolean exito = controlador.cambiarNip(cuenta.getTarjetaAsociada(), nuevoNip);
-            JOptionPane.showMessageDialog(this, exito ? "NIP actualizado correctamente." : "Error al actualizar el NIP.");
+            try {
+                String nuevoNip = new String(campoNuevoNip.getPassword());
+                boolean exito = controlador.cambiarNip(cuenta.getTarjetaAsociada(), nuevoNip);
+                JOptionPane.showMessageDialog(this, exito ? "NIP actualizado correctamente." : "Error al actualizar el NIP.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al cambiar el NIP:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         });
 
         JPanel panel = new JPanel(new GridLayout(2, 2));
@@ -42,4 +47,5 @@ public class InterfazCambioNIP extends JFrame {
         setVisible(true);
     }
 }
+
 
