@@ -60,15 +60,22 @@ public class InterfazATM extends JFrame {
     public void setControlador(ControladorATM controlador) {
         this.controlador = controlador;
     }
+    
+    public void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(
+            this, 
+            mensaje, 
+            "Información", 
+            JOptionPane.INFORMATION_MESSAGE
+        );
+    }
 
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 public void mostrarMenuPrincipal(Cuenta cuenta) {
-    JOptionPane.showMessageDialog(this, "Bienvenido. Su saldo es: $" + cuenta.getSaldo(),
-            "Menú Principal", JOptionPane.INFORMATION_MESSAGE);
-    new InterfazTransacciones(cuenta, controlador);
-    this.dispose(); // Cierra la ventana actual
-}
+        new InterfazTransacciones(cuenta, controlador);
+        this.dispose();
+    }
 }

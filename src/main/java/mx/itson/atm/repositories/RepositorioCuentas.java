@@ -27,7 +27,6 @@ public class RepositorioCuentas {
     public RepositorioCuentas() {
         this.cuentasPorNumero = new HashMap<>();
         this.cuentasPorTarjeta = new HashMap<>();
-        cargarDatosIniciales();
     }
 
     /**
@@ -35,9 +34,23 @@ public class RepositorioCuentas {
      * @param numeroCuenta Número de cuenta a buscar
      * @return La cuenta encontrada o null si no existe
      */
-    public Cuenta buscarPorNumero(String numeroCuenta) {
-        return cuentasPorNumero.get(numeroCuenta);
+    public Cuenta buscarPorNumero(String numeroCuenta) throws SQLException {
+    String sql = "SELECT * FROM cuentas WHERE numero_cuenta = ?";
+    
+    try (PreparedStatement stmt = ConexionDB.getConnection().prepareStatement(sql)) {
+        stmt.setString(1, numeroCuenta);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return new Cuenta(
+                    rs.getString("numero_cuenta"),
+                    rs.getDouble("saldo"),
+                    rs.getString("id_propietario")
+                );
+            }
+            return null;
+        }
     }
+}
 
     /**
      * Busca una cuenta asociada a una tarjeta
@@ -72,13 +85,23 @@ public class RepositorioCuentas {
      * Guarda o actualiza una cuenta en el repositorio
      * @param cuenta La cuenta a guardar
      */
-    public void guardar(Cuenta cuenta) {
-        cuentasPorNumero.put(cuenta.getNumeroCuenta(), cuenta);
-        
-        if (cuenta.getTarjetaAsociada() != null) {
-            cuentasPorTarjeta.put(cuenta.getTarjetaAsociada().getNumeroTarjeta(), cuenta);
-        }
+    public void guardar(Cuenta cuenta) throws SQLException {
+    // Actualizar en memoria
+    cuentasPorNumero.put(cuenta.getNumeroCuenta(), cuenta);
+    
+    if (cuenta.getTarjetaAsociada() != null) {
+        cuentasPorTarjeta.put(cuenta.getTarjetaAsociada().getNumeroTarjeta(), cuenta);
     }
+
+    // Actualizar en la base de datos
+    String sql = "UPDATE cuentas SET saldo = ? WHERE numero_cuenta = ?";
+    try (Connection conn = ConexionDB.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setDouble(1, cuenta.getSaldo());
+        stmt.setString(2, cuenta.getNumeroCuenta());
+        stmt.executeUpdate();
+    }
+}
 
     /**
      * Obtiene todas las cuentas registradas
@@ -88,16 +111,6 @@ public class RepositorioCuentas {
         return new ArrayList<>(cuentasPorNumero.values());
     }
 
-    /**
-     * Carga datos iniciales de prueba
-     */
-    private void cargarDatosIniciales() {
-        // Cuenta de ejemplo
-        Cuenta cuentaEjemplo = new Cuenta("123456789", 10000.0, "CLI10001");
-        guardar(cuentaEjemplo);
-        
-        // Puedes agregar más cuentas de prueba aquí
-    }
 
     /**
      * Actualiza el saldo de una cuenta
@@ -105,7 +118,7 @@ public class RepositorioCuentas {
      * @param nuevoSaldo Nuevo saldo a establecer
      * @return true si se actualizó correctamente
      */
-    public boolean actualizarSaldo(String numeroCuenta, double nuevoSaldo) {
+    public boolean actualizarSaldo(String numeroCuenta, double nuevoSaldo) throws SQLException {
         Cuenta cuenta = buscarPorNumero(numeroCuenta);
         if (cuenta != null) {
             cuenta.setSaldo(nuevoSaldo);

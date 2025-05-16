@@ -23,36 +23,49 @@ import mx.itson.atm.services.ServicioATM;
  * @author alang
  */
 public class InterfazTransacciones extends JFrame {
-    private final Cuenta cuenta;
-    private final ControladorATM controlador;
-
     public InterfazTransacciones(Cuenta cuenta, ControladorATM controlador) {
-        this.cuenta = cuenta;
-        this.controlador = controlador;
-        
-        setTitle("Operaciones ATM");
-        setSize(300, 300);
+        setTitle("ATM - Menú Principal");
+        setSize(400, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton btnRetirar = new JButton("Retirar");
-        JButton btnDepositar = new JButton("Depositar");
-        JButton btnTransferir = new JButton("Transferir");
-        JButton btnCambiarNIP = new JButton("Cambiar NIP");
+        JLabel lblSaldo = new JLabel("Saldo actual: $" + cuenta.getSaldo());
+        JButton btnDeposito = new JButton("Realizar Depósito");
+        JButton btnRetiro = new JButton("Retirar Efectivo");
+        JButton btnConsulta = new JButton("Consultar Saldo");
+        JButton btnSalir = new JButton("Salir");
 
-        btnRetirar.addActionListener(e -> new InterfazRetiro(cuenta, controlador));
-        btnDepositar.addActionListener(e -> new InterfazDeposito(cuenta, controlador));
-        btnTransferir.addActionListener(e -> new InterfazTransferencia(cuenta, controlador));
-        btnCambiarNIP.addActionListener(e -> new InterfazCambioNIP(cuenta, controlador));
+        btnDeposito.addActionListener(e -> {
+            new InterfazDeposito(cuenta, controlador);
+            dispose();
+        });
 
-        panel.add(new JLabel("Seleccione una operación:", SwingConstants.CENTER));
-        panel.add(btnRetirar);
-        panel.add(btnDepositar);
-        panel.add(btnTransferir);
-        panel.add(btnCambiarNIP);
+        btnRetiro.addActionListener(e -> {
+            new InterfazRetiro(cuenta, controlador);
+            dispose();
+        });
+
+        btnConsulta.addActionListener(e -> {
+            double saldo = controlador.obtenerSaldo(cuenta.getNumeroCuenta());
+            JOptionPane.showMessageDialog(this, 
+                "Saldo actual: $" + saldo, 
+                "Consulta de Saldo", 
+                JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        btnSalir.addActionListener(e -> {
+            controlador.cerrarSistema();
+            dispose();
+        });
+
+        panel.add(lblSaldo);
+        panel.add(btnDeposito);
+        panel.add(btnRetiro);
+        panel.add(btnConsulta);
+        panel.add(btnSalir);
 
         add(panel);
         setVisible(true);

@@ -62,23 +62,41 @@ public class ControladorATM {
     }
     
     public void cerrarSistema() {
-        try {
             ConexionDB.cerrarConexiones();
-        } catch (SQLException e) {
-            System.err.println("Error al cerrar conexiones: " + e.getMessage());
-        }
-    }
-    public Transaccion retirar(String numeroCuenta, double monto) {
+            }
+    
+    
+    public Transaccion retirar(String numeroCuenta, double monto) throws SQLException {
     return servicioATM.retirarEfectivo(numeroCuenta, monto);
 }
 
 public Transaccion depositar(String numeroCuenta, double monto) {
-    return servicioATM.depositarEfectivo(numeroCuenta, monto);
-}
+        try {
+            Transaccion txn = servicioATM.depositarEfectivo(numeroCuenta, monto);
+            if (txn != null) {
+                vista.mostrarMensaje("Depósito realizado. Nuevo saldo: $" + 
+                    servicioATM.obtenerSaldoCuenta(numeroCuenta));
+                return txn;
+            } else {
+                vista.mostrarError("No se pudo completar el depósito");
+                return null;
+            }
+        } catch (SQLException e) {
+            ConexionDB.rollback();
+            vista.mostrarError("Error en transacción: " + e.getMessage());
+            return null;
+        }
+    }
 
-public boolean transferir(String origen, String destino, double monto) {
-    return servicioATM.transferir(origen, destino, monto);
-}
+public double obtenerSaldo(String numeroCuenta) {
+        try {
+            return servicioATM.obtenerSaldoCuenta(numeroCuenta);
+        } catch (SQLException e) {
+            vista.mostrarError("Error al consultar saldo: " + e.getMessage());
+            return -1; // Valor negativo para indicar error
+        }
+    }
+
 
 public boolean cambiarNip(Tarjeta tarjeta, String nuevoNip) {
     return servicioATM.cambiarNip(tarjeta, nuevoNip);

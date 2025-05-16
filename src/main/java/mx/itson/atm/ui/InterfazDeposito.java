@@ -5,6 +5,7 @@
 package mx.itson.atm.ui;
 
 import java.awt.GridLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,32 +22,61 @@ import mx.itson.atm.model.Transaccion;
  */
 public class InterfazDeposito extends JFrame {
     public InterfazDeposito(Cuenta cuenta, ControladorATM controlador) {
-        setTitle("Depósito");
-        setSize(300, 150);
+        setTitle("Depósito - Cuenta: " + cuenta.getNumeroCuenta());
+        setSize(350, 200);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel lblCuenta = new JLabel("Cuenta:");
+        JLabel lblNumeroCuenta = new JLabel(cuenta.getNumeroCuenta());
+        JLabel lblMonto = new JLabel("Monto a depositar:");
         JTextField campoMonto = new JTextField();
-        JButton botonDepositar = new JButton("Depositar");
+        JButton btnCancelar = new JButton("Cancelar");
+        JButton btnDepositar = new JButton("Depositar");
 
-        botonDepositar.addActionListener(e -> {
+        btnDepositar.addActionListener(e -> {
             try {
                 double monto = Double.parseDouble(campoMonto.getText());
+                if (monto <= 0) {
+                    JOptionPane.showMessageDialog(this, 
+                        "El monto debe ser positivo", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
                 Transaccion txn = controlador.depositar(cuenta.getNumeroCuenta(), monto);
                 if (txn != null) {
-                    JOptionPane.showMessageDialog(this, "Depósito exitoso:\n" + txn.generarComprobante());
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo realizar el depósito.");
+                    JOptionPane.showMessageDialog(this, 
+                        "Depósito exitoso!\nNuevo saldo: $" + controlador.obtenerSaldo(cuenta.getNumeroCuenta()),
+                        "Éxito", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
                 }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Ingrese un monto válido", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al realizar el depósito:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, 
+                    "Error en la operación: " + ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        JPanel panel = new JPanel(new GridLayout(2, 2));
-        panel.add(new JLabel("Monto:"));
+        btnCancelar.addActionListener(e -> dispose());
+
+        panel.add(lblCuenta);
+        panel.add(lblNumeroCuenta);
+        panel.add(lblMonto);
         panel.add(campoMonto);
-        panel.add(botonDepositar);
+        panel.add(btnCancelar);
+        panel.add(btnDepositar);
 
         add(panel);
         setVisible(true);

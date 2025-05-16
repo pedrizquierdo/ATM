@@ -4,10 +4,15 @@
  */
 package mx.itson.atm.repositories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import mx.itson.atm.connection.ConexionDB;
 import mx.itson.atm.model.Transaccion;
 
 /**
@@ -29,17 +34,31 @@ public class RepositorioTransacciones {
      * @param transaccion Transacción a guardar
      * @return La transacción guardada
      */
-    public Transaccion guardar(Transaccion transaccion) {
-        transaccionesPorId.put(transaccion.getIdTransaccion(), transaccion);
+    public Transaccion guardar(Transaccion transaccion) throws SQLException {
+    String sql = "INSERT INTO transacciones (IdTransaccion, tipo, monto, numero_cuenta, fecha_hora, estado) " +
+             "VALUES (?, ?, ?, ?, ?, ?)";
+    
+    try (Connection conn = ConexionDB.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
         
-        String numeroCuenta = transaccion.getNumeroCuenta();
-        if (!transaccionesPorCuenta.containsKey(numeroCuenta)) {
-            transaccionesPorCuenta.put(numeroCuenta, new ArrayList<>());
-        }
-        transaccionesPorCuenta.get(numeroCuenta).add(transaccion);
+        stmt.setString(1, transaccion.getIdTransaccion());
+        stmt.setString(2, transaccion.getTipo());
+        stmt.setDouble(3, transaccion.getMonto());
+        stmt.setString(4, transaccion.getNumeroCuenta());
+        stmt.setTimestamp(5, Timestamp.valueOf(transaccion.getFechaHora()));
+        stmt.setString(6, transaccion.getEstado());
         
-        return transaccion;
+        stmt.executeUpdate();
     }
+    
+    // También guardar en memoria para caché
+    transaccionesPorId.put(transaccion.getIdTransaccion(), transaccion);
+    
+    String numeroCuenta = transaccion.getNumeroCuenta();
+    transaccionesPorCuenta.computeIfAbsent(numeroCuenta, k -> new ArrayList<>()).add(transaccion);
+    
+    return transaccion;
+}
 
     /**
      * Busca una transacción por su ID
