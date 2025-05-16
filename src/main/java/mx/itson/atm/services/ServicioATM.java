@@ -44,9 +44,9 @@ public class ServicioATM {
         return null;
     }
 
-    public Cuenta obtenerCuentaPorTarjeta(String numeroTarjeta) {
-        return repositorioCuentas.buscarPorTarjeta(numeroTarjeta);
-    }
+    public Cuenta obtenerCuentaPorTarjeta(String numeroTarjeta) throws SQLException {
+    return repositorioCuentas.buscarPorTarjeta(numeroTarjeta);
+}
      public Transaccion depositarEfectivo(String numeroCuenta, double monto) {
     Cuenta cuenta = repositorioCuentas.buscarPorNumero(numeroCuenta);
     if (cuenta != null && monto > 0) {

@@ -9,6 +9,7 @@ import mx.itson.atm.controller.ControladorATM;
 import mx.itson.atm.repositories.RepositorioCuentas;
 import mx.itson.atm.repositories.RepositorioTarjetas;
 import mx.itson.atm.repositories.RepositorioTransacciones;
+import mx.itson.atm.utilities.UtilidadSeguridad;
 
 /**
  *
@@ -19,6 +20,8 @@ public class Main {
 
 public static void main(String[] args) {
         
+    System.out.println("Hashed NIP for 1234: " + UtilidadSeguridad.hashearNip("1234"));
+            
             RepositorioTarjetas rt = new RepositorioTarjetas();
             RepositorioCuentas rc = new RepositorioCuentas();
             RepositorioTransacciones rtr = new RepositorioTransacciones();

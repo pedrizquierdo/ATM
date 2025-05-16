@@ -4,10 +4,15 @@
  */
 package mx.itson.atm.repositories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import mx.itson.atm.connection.ConexionDB;
 import mx.itson.atm.model.Cuenta;
 
 /**
@@ -39,8 +44,28 @@ public class RepositorioCuentas {
      * @param numeroTarjeta Número de tarjeta a buscar
      * @return La cuenta asociada o null si no existe
      */
-    public Cuenta buscarPorTarjeta(String numeroTarjeta) {
-        return cuentasPorTarjeta.get(numeroTarjeta);
+   public Cuenta buscarPorTarjeta(String numeroTarjeta) throws SQLException {
+        String sql = "SELECT c.* FROM cuentas c " +
+                    "JOIN tarjetas t ON c.numero_cuenta = t.numeroCuenta " +
+                    "WHERE t.numero_Tarjeta = ?";
+        
+        try (Connection conn = ConexionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, numeroTarjeta);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Cuenta cuenta = new Cuenta(
+                        rs.getString("numero_cuenta"),
+                        rs.getDouble("saldo"),
+                        rs.getString("id_propietario")
+                    );
+                    // You might want to set other fields here
+                    return cuenta;
+                }
+                return null;
+            }
+        }
     }
 
     /**
