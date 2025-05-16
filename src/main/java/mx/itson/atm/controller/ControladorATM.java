@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import mx.itson.atm.connection.ConexionDB;
 import mx.itson.atm.model.Cuenta;
 import mx.itson.atm.model.Tarjeta;
+import mx.itson.atm.model.Transaccion;
 import mx.itson.atm.repositories.RepositorioCuentas;
 import mx.itson.atm.repositories.RepositorioTarjetas;
 import mx.itson.atm.repositories.RepositorioTransacciones;
@@ -67,4 +68,19 @@ public class ControladorATM {
             System.err.println("Error al cerrar conexiones: " + e.getMessage());
         }
     }
+    public Transaccion retirar(String numeroCuenta, double monto) {
+    return servicioATM.retirarEfectivo(numeroCuenta, monto);
+}
+
+public Transaccion depositar(String numeroCuenta, double monto) {
+    return servicioATM.depositarEfectivo(numeroCuenta, monto);
+}
+
+public boolean transferir(String origen, String destino, double monto) {
+    return servicioATM.transferir(origen, destino, monto);
+}
+
+public boolean cambiarNip(Tarjeta tarjeta, String nuevoNip) {
+    return servicioATM.cambiarNip(tarjeta, nuevoNip);
+}
 }

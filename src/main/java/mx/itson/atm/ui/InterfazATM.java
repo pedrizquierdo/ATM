@@ -65,10 +65,10 @@ public class InterfazATM extends JFrame {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void mostrarMenuPrincipal(Cuenta cuenta) {
-        // Simulación de un menú simple de opciones. Puede expandirse según funcionalidad
-        JOptionPane.showMessageDialog(this, "Bienvenido. Su saldo es: $" + cuenta.getSaldo(),
-                "Menú Principal", JOptionPane.INFORMATION_MESSAGE);
-        // Aquí podrías cambiar a otro panel con más opciones
-    }
+public void mostrarMenuPrincipal(Cuenta cuenta) {
+    JOptionPane.showMessageDialog(this, "Bienvenido. Su saldo es: $" + cuenta.getSaldo(),
+            "Menú Principal", JOptionPane.INFORMATION_MESSAGE);
+    new InterfazTransacciones(cuenta, controlador);
+    this.dispose(); // Cierra la ventana actual
+}
 }
