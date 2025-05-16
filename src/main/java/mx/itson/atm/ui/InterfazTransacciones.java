@@ -63,7 +63,6 @@ public class InterfazTransacciones extends JFrame {
 
         panel.add(lblSaldo);
         panel.add(btnDeposito);
-        panel.add(btnRetiro);
         panel.add(btnConsulta);
         panel.add(btnSalir);
 
